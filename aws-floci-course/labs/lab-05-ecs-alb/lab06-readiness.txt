@@ -1,0 +1,21 @@
+# Lab 05 Exercise 5 - readiness for Lab 06 (ALBRequestCountPerTarget)
+# Generated 2026-10-12T20:10:49Z
+
+resource label          : app/usms-enrolment-alb/59dc0d3ea7324f5e/targetgroup/usms-enrolment-tg/add5ea39cc5b477f
+target group ARN        : arn:aws:elasticloadbalancing:us-east-1:000000000000:targetgroup/usms-enrolment-tg/add5ea39cc5b477f
+load balancer ARN       : arn:aws:elasticloadbalancing:us-east-1:000000000000:loadbalancer/app/usms-enrolment-alb/59dc0d3ea7324f5e
+scalable resource ID    : service/usms-ecs-cluster/usms-enrolment-svc
+scalable dimension      : ecs:service:DesiredCount
+current desired count   : 2
+recommended metric      : ALBRequestCountPerTarget - the enrolment API is a request/response web API behind this target group, so requests per task measures demand directly and moves before CPU saturates, whereas ECSServiceAverageCPUUtilization lags and ECSServiceAverageMemoryUtilization barely moves for nginx.
+
+capacity replacement (forced deployment) : 11.5s elapsed - MEANINGLESS on this build: Floci 1.7 accepted --force-new-deployment but replaced no task (identical task ARNs before and after).
+capacity add (measured instead)          : 38.5s from update-service --desired-count 3 to the third target reporting healthy through the ALB's own health checks.
+AWS documented figure                    : Fargate tasks typically take 20 to 60 seconds to reach RUNNING (image pull and ENI attachment), before health checks; with a 30 s interval and healthy threshold 2, a new target needs up to about 60 s more to receive traffic.
+implication for Lab 06                   : scale-out cooldown of about 60 s is consistent with the measured 38.5s; scale-in cooldown should be longer (300 s) so capacity is not removed while a burst is still arriving.
+
+## label checks (Exercise 5 part 5)
+contains usms-enrolment-alb : yes
+contains usms-enrolment-tg  : yes
+segments                    : 6 (want 6)
+first segment               : app (want app) - 'app' is the load balancer type in its ARN; a Network Load Balancer's would be 'net' (and NLBs have no ALBRequestCountPerTarget).
