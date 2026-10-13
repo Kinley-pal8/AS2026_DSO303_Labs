@@ -1,0 +1,36 @@
+# Lab 04 Exercise 5 - usms-enrolment-sg source group resolved back to Lab 03
+# Generated 2026-10-12T19:18:02Z
+
+enrolment security group : sg-aa114e46fb208dcb3 (usms-enrolment-sg)
+only inbound source group: sg-d65bcc7ad6230c0b3 (usms-app-sg), tcp/80
+
+server-side lookup       : describe-instances --filters Name=instance.group-id,Values=sg-d65bcc7ad6230c0b3 Name=instance-state-name,Values=running
+                           returned 4 instances - Floci 1.7 ignores the instance.group-id filter
+                           (a non-existent group ID returns every instance), so it was not used as evidence.
+client-side lookup       : Reservations[].Instances[?State.Name=='running' && SecurityGroups[?GroupId=='sg-d65bcc7ad6230c0b3']]
+                           i-b617e94be1c24637e	usms-web-01
+                           i-fee3fe4304bdc1f02	usms-web-02
+
+configs/lab-03.env       : USMS_WEB_INSTANCE=i-b617e94be1c24637e
+verdict                  : LOOP CLOSED - i-b617e94be1c24637e (usms-web-01) carries the source group.
+                           A second instance, usms-web-02, also carries usms-app-sg: it was launched
+                           deliberately in Lab 03 Step 18 'Your turn' as a second web server in
+                           us-east-1b, so it is an expected second caller, not a drift.
+
+This rule is temporary: Lab 05 removes it once the load balancer becomes the only caller of the enrolment service.
+
+## ECS tag audit (aws ecs list-tags-for-resource, by ARN)
+-- arn:aws:ecs:us-east-1:000000000000:cluster/usms-ecs-cluster
+   Project	USMS
+   Tier	app
+   Name	usms-ecs-cluster
+-- arn:aws:ecs:us-east-1:000000000000:service/usms-ecs-cluster/usms-enrolment-svc
+   Project	USMS
+   Tier	app
+   Lab	04
+   Name	usms-enrolment-svc
+-- arn:aws:ecs:us-east-1:000000000000:task-definition/usms-enrolment:1
+   Project	USMS
+   Tier	app
+   Lab	04
+   Name	usms-enrolment
