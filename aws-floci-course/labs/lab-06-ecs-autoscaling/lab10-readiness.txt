@@ -1,0 +1,10 @@
+# Lab 06 Exercise 5 - readiness for Lab 10 (usms-student-data)
+# Generated 2026-10-13T19:41:01Z
+history file     : outputs/lab-06-scaling-history.json (12007 bytes, valid JSON: yes)
+scale latency    : 62.8s to serving capacity (running after 7.4s)
+task role ARN    : arn:aws:iam::000000000000:role/usms-ecs-task-role
+bucket ARN       : arn:aws:s3:::usms-student-data   (read from arn:aws:iam::000000000000:policy/USMSStudentDataReadWrite version v1, statement ListTheBucketItself; the object ARN arn:aws:s3:::usms-student-data/* is the second Resource)
+permissions      : USMSStudentDataReadWrite grants s3:ListBucket and s3:GetBucketLocation on the bucket, s3:GetObject/PutObject/DeleteObject on its objects, and explicitly DENIES s3:DeleteBucket.
+head-bucket      :  aws: [ERROR]: An error occurred (404) when calling the HeadBucket operation: Not Found 
+head-bucket exit : 254
+after Lab 10 Step 1: head-bucket returns exit 0 with no error, and usms-ecs-task-role's existing policy starts applying to a real bucket - with no change to the role, the task definition or the service.

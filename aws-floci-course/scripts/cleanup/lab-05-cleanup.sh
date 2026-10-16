@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # END OF COURSE ONLY. Removes Lab 05, dependencies first.
 # Order: service -> rules -> listener -> load balancer -> target group -> security group.
-# Run AFTER scripts/cleanup/lab-04-cleanup.sh and BEFORE scripts/cleanup/lab-04-cleanup.sh.
+# Run AFTER scripts/cleanup/lab-06-cleanup.sh and BEFORE scripts/cleanup/lab-04-cleanup.sh.
 set -Eeuo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -20,7 +20,7 @@ cat <<'WARN'
   Lab 06, Lab 09 and the CloudFormation lab depend on parts
   of it. None of this is reversible.
 
-  Run AFTER  lab-04-cleanup.sh
+  Run AFTER  lab-06-cleanup.sh
   Run BEFORE lab-04-cleanup.sh
 ============================================================
 WARN
@@ -32,7 +32,7 @@ TARGETS=$(aws application-autoscaling describe-scalable-targets \
             --query 'length(ScalableTargets)' --output text 2>/dev/null || echo 0)
 if [ "$TARGETS" != "0" ] && [ "$TARGETS" != "None" ]; then
   echo "REFUSING: a scalable target still exists for $RID"
-  echo "Run scripts/cleanup/lab-04-cleanup.sh first."
+  echo "Run scripts/cleanup/lab-06-cleanup.sh first."
   exit 1
 fi
 
