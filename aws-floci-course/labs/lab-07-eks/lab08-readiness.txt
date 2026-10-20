@@ -1,0 +1,29 @@
+# Lab 07 -> Lab 08 readiness (copy of outputs/lab-07-cpu-baseline.txt and outputs/lab-07-lab06-readiness.txt; no secrets)
+
+# Lab 07 Exercise 5 part 1 - CPU baseline of usms-enrolment, 2026-10-16T03:34:30Z
+--- does the metrics API exist?
+metrics.k8s.io/v1beta1: PRESENT (k3s ships metrics-server)
+v1beta1.metrics.k8s.io   kube-system/metrics-server   True   9m33s
+--- kubectl top
+NAME                              CPU(cores)   MEMORY(bytes)   
+usms-enrolment-8549846ddd-mqzrz   1m           10Mi            
+usms-enrolment-8549846ddd-sk8z8   1m           9Mi             
+--- as a percentage of the 50m request (what Lab 08's HPA will compute)
+usms-enrolment-8549846ddd-mqzrz      cpu=1m  = 2% of 50m request   memory=10Mi
+usms-enrolment-8549846ddd-sk8z8      cpu=1m  = 2% of 50m request   memory=9Mi
+
+# Lab 07 Exercise 5 part 2 - USMSStudentDataReadWrite, read from IAM, 2026-10-16T03:34:45Z
+policy ARN      : arn:aws:iam::000000000000:policy/USMSStudentDataReadWrite
+default version : v1
+roles carrying it:
+  - usms-ec2-app-role
+  - usms-ecs-task-role
+  - usms-eks-node-role
+statements (Sid -> Resource):
+  ListTheBucketItself	arn:aws:s3:::usms-student-data
+  ReadWriteObjectsInsideTheBucket	arn:aws:s3:::usms-student-data/*
+  NeverDeleteTheBucket	arn:aws:s3:::usms-student-data
+bucket ARN      : arn:aws:s3:::usms-student-data   (ListBucket: the bucket itself)
+object ARN      : arn:aws:s3:::usms-student-data/*   (Get/PutObject: keys inside it)
+bucket name     : usms-student-data   (read out of the policy document, not typed)
+bucket exists   : NO - head-bucket fails; Lab 10 creates it
